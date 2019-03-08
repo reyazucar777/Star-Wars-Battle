@@ -21,6 +21,9 @@ shootHalcon.src = "./Audio/shootcorto3.mp3";
 var explosion = new Audio();
 explosion.src = "./Audio/explosión.mp3";
 
+var restart = new Audio();
+restart.src = "./Audio/Cowabunga!.mp3";
+
 var audioBoss = new Audio();
 audioBoss.src = "./Audio/Boss Imperial March.mp3";
 
@@ -82,6 +85,7 @@ function drawBullets() {
     if (bullet.y > canvas.height) {
       return bullets.splice(i, 1);
     }
+
     bullet.draw();
     enemies.forEach((enemy, index) => {
       if (bullet.collision(enemy) && bullet.direction !== "down") {
@@ -121,13 +125,17 @@ class Enemy {
 }
 
 function generateEnemies() {
-  if (frames % 100 == 0 || frames % 60 == 0 || frames % 170 == 0) {
+  if (
+    (frames % 100 == 0 || frames % 60 == 0 || frames % 170 == 0) &&
+    score < 2000
+  ) {
     const x = Math.floor(Math.random() * 15);
     var randomEnemy = Math.floor(Math.random() * enemyImage.length);
     enemies.push(new Enemy(x * 64, enemyImage[randomEnemy]));
   }
 }
 function drawEnemies() {
+  if (enemies.length <= 0) return;
   enemies.forEach(function(enemy) {
     enemy.draw();
     if (frames % 300 === 0 || frames % 180 == 0 || frames % 100 === 0)
@@ -137,17 +145,17 @@ function drawEnemies() {
 
 class Boss {
   constructor(x) {
-    this.x = x;
+    this.x = 20;
     this.y = 40;
-    this.width = 80;
+    this.width = 100;
     this.height = 110;
     this.image = new Image();
     this.image.src = "./imagenes/darthnave.PNG";
+    this.visible = false;
   }
   draw() {
-    if (score > 2000) {
-      Audio.pause();
-      audioBoss.play();
+    //if (frames % 10) this.x -= 5;
+    if (score >= 2000) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
   }
@@ -155,11 +163,20 @@ class Boss {
 var boss = new Boss();
 
 function generateBoss() {
-  if (score >= 2000) {
-    boss.draw();
-    boss.visible = true;
+  if (frames % 100 == 0 || frames % 60 == 0 || frames % 170 == 0) {
+    const x = Math.floor(Math.random() * 15);
+    var boss = Math.floor(Math.random() * Boss.length);
+    boss.push(x * 64, boss[0]);
   }
 }
+/*function drawBoss() {
+  if (boss.length <= 0) return;
+  boss.forEach(function(boss) {
+    boss.draw();
+    if (frames % 300 === 0 || frames % 180 == 0 || frames % 100 === 0)
+      boss.shoot();
+  });
+}*/
 
 class Background {
   constructor() {
@@ -180,6 +197,10 @@ class Background {
       audio.pause();
       endAudioBackground.play();
       endAudioDarth.play();
+      //ctx.font = "30px Avenir";
+      //ctx.fillText("Press `ESC` to play again", 300, 230);
+      //clearInterval(interval);
+      //interval = undefined;
     }
   }
 
@@ -211,10 +232,14 @@ function update() {
   drawEnemies();
   drawBullets();
   boss.draw();
-  generateBoss();
+  //generateBoss();
+  //drawBoss();
   ctx.fillStyle = "white";
   ctx.font = "25px VT323";
   ctx.fillText("SCORE " + score, 800, 20);
+  ctx.fillStyle = "white";
+  ctx.font = "25px VT323";
+  ctx.fillText("HEALTH " + halcon.health, 20, 20);
   background.gameOver();
 }
 
@@ -224,13 +249,15 @@ function start() {
   audio.play();
 }
 
-/*function restart() {
+function restart() {
   if (interval !== undefined) return;
+  score = 0;
   frames = 0;
   interval = undefined;
-  audio.currentTime = 0;
+  //audio.currentTime = 0;
+  restart.play();
   start();
-}*/
+}
 
 addEventListener("keydown", function(event) {
   if (event.keyCode === 39) {
@@ -242,6 +269,13 @@ addEventListener("keydown", function(event) {
   if (event.keyCode === 32) {
     bullets.push(new Bullets(halcon.x, halcon.y));
     shootHalcon.play();
+  }
+  if (event.keyCode === 27) {
+    restart();
+    restart.play();
+  }
+  if (event.keyCode === 67) {
+    score = 2000;
   }
 });
 

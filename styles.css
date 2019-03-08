@@ -1,0 +1,14 @@
+body {
+  background-image: url(/home/reyazucar777/Documentos/Videojuego/imagenes/backgroundsw.jpeg);
+  height: 200vh;
+}
+
+body {
+  display: center;
+  height: 100vh;
+  justify-content: center;
+}
+
+canvas{
+    margin-top: 75px;
+}
