@@ -7,6 +7,7 @@ var interval;
 var enemy1 = "./imagenes/cazatie.PNG";
 var enemy2 = "./imagenes/cazatie2.PNG";
 enemyImage = [enemy1, enemy2];
+var bosshealth = 1000;
 
 var btn = document.querySelector("button");
 
@@ -14,8 +15,18 @@ var audio = new Audio();
 audio.src = "./Audio/The Millennium Falcon.mp3";
 audio.loop = true;
 
+var shootHalcon = new Audio();
+shootHalcon.src = "./Audio/shootcorto3.mp3";
+
+var explosion = new Audio();
+explosion.src = "./Audio/explosión.mp3";
+
+var audioBoss = new Audio();
+audioBoss.src = "./Audio/Boss Imperial March.mp3";
+
 var endAudioBackground = new Audio();
-endAudioBackground.src = "./Audio/Star Wars Main Theme.mp3";
+endAudioBackground.src =
+  "./Audio/You Don_t Know the Power of the Dark Side(MP3_160K).mp3";
 endAudioBackground.loop = false;
 
 var endAudioDarth = new Audio();
@@ -74,6 +85,7 @@ function drawBullets() {
     bullet.draw();
     enemies.forEach((enemy, index) => {
       if (bullet.collision(enemy) && bullet.direction !== "down") {
+        explosion.play();
         bullets.splice(i, 1);
         enemies.splice(index, 1);
         score += 100;
@@ -123,6 +135,32 @@ function drawEnemies() {
   });
 }
 
+class Boss {
+  constructor(x) {
+    this.x = x;
+    this.y = 40;
+    this.width = 80;
+    this.height = 110;
+    this.image = new Image();
+    this.image.src = "./imagenes/darthnave.PNG";
+  }
+  draw() {
+    if (score > 2000) {
+      Audio.pause();
+      audioBoss.play();
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+  }
+}
+var boss = new Boss();
+
+function generateBoss() {
+  if (score >= 2000) {
+    boss.draw();
+    boss.visible = true;
+  }
+}
+
 class Background {
   constructor() {
     this.x = 0;
@@ -134,15 +172,14 @@ class Background {
   }
 
   gameOver() {
-    if (halcon.health === 0){
-    clearInterval(interval);
-
-    ctx.font = "30px Avenir";
-    ctx.fillText("Game Over", 250, 190);
-    interval = undefined;
-    audio.pause();
-    endAudioBackground.play();
-    endAudioDarth.play();
+    if (halcon.health === 0) {
+      clearInterval(interval);
+      ctx.font = "30px Avenir";
+      ctx.fillText("Game Over", 250, 190);
+      interval = undefined;
+      audio.pause();
+      endAudioBackground.play();
+      endAudioDarth.play();
     }
   }
 
@@ -173,13 +210,13 @@ function update() {
   generateEnemies();
   drawEnemies();
   drawBullets();
+  boss.draw();
+  generateBoss();
   ctx.fillStyle = "white";
   ctx.font = "25px VT323";
   ctx.fillText("SCORE " + score, 800, 20);
   background.gameOver();
-
 }
-
 
 function start() {
   if (interval !== undefined) return;
@@ -204,6 +241,7 @@ addEventListener("keydown", function(event) {
   }
   if (event.keyCode === 32) {
     bullets.push(new Bullets(halcon.x, halcon.y));
+    shootHalcon.play();
   }
 });
 
