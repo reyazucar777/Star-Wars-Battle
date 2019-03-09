@@ -6,7 +6,10 @@ var score = 0;
 var interval;
 var enemy1 = "./imagenes/cazatie.PNG";
 var enemy2 = "./imagenes/cazatie2.PNG";
-enemyImage = [enemy1, enemy2];
+var enemy3 = "./imagenes/darthnave.PNG";
+var enemy4 = "./imagenes/deathstar1.PNG";
+var enemy5 = "./imagenes/deathstar2.PNG";
+enemyImage = [enemy1, enemy2, enemy3, enemy4, enemy5];
 var bosshealth = 1000;
 
 var btn = document.querySelector("button");
@@ -92,7 +95,7 @@ function drawBullets() {
         explosion.play();
         bullets.splice(i, 1);
         enemies.splice(index, 1);
-        score += 100;
+        score += 50;
       }
     });
 
@@ -108,8 +111,8 @@ class Enemy {
   constructor(x, img) {
     this.x = x;
     this.y = 40;
-    this.width = 80;
-    this.height = 110;
+    this.width = 100;
+    this.height = 130;
     this.image = new Image();
     this.image.src = img;
   }
@@ -150,7 +153,7 @@ class Boss {
     this.width = 100;
     this.height = 110;
     this.image = new Image();
-    this.image.src = "./imagenes/darthnave.PNG";
+    this.image.src = "./imagenes/deathstar1.PNG";
     this.visible = false;
   }
   draw() {
@@ -191,12 +194,13 @@ class Background {
   gameOver() {
     if (halcon.health === 0) {
       clearInterval(interval);
-      ctx.font = "30px Avenir";
-      ctx.fillText("Game Over", 250, 190);
+      ctx.font = "100px Avenir";
+      ctx.fillText("Game Over", 250, 300);
       interval = undefined;
       audio.pause();
       endAudioBackground.play();
       endAudioDarth.play();
+      
       //ctx.font = "30px Avenir";
       //ctx.fillText("Press `ESC` to play again", 300, 230);
       //clearInterval(interval);
@@ -239,7 +243,7 @@ function update() {
   ctx.fillText("SCORE " + score, 800, 20);
   ctx.fillStyle = "white";
   ctx.font = "25px VT323";
-  ctx.fillText("HEALTH " + halcon.health, 20, 20);
+  ctx.fillText("HALCON " + halcon.health, 20, 20);
   background.gameOver();
 }
 
@@ -278,6 +282,7 @@ addEventListener("keydown", function(event) {
     score = 2000;
   }
 });
+
 
 addEventListener("click", e => {
   if (e.target.classList[0] == "btn") {
